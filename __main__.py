@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 
-
 Ideas for the following program:
     
     Montecarlo simulation for pricing,
@@ -16,7 +15,17 @@ import pandas as pd
 import seaborn as sns
 import pylab as plt
 import scipy.stats as st
+import yfinance #yhaoo finance api to download economic database
 
+
+#IMPORT DATA AND FETCH
+
+
+
+
+
+
+#ANALYZE 
 
 
 def euler_maruyama(a,b,x0,T):    #Integration of the black scholes equation: ITO process
