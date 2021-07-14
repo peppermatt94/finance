@@ -1,0 +1,8 @@
+#extensions
+__pycache__/
+.ipynb_checkpoints/
+*.rst
+
+#Pacakges
+*/finance.egg-info/*
+*/.hypotesis/*
