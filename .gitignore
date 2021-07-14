@@ -4,6 +4,6 @@
 *.rst
 
 #Pacakges
-**/finance.egg-info/
+**/finance.egg-info
 **/.hypotesis
-**/__pycache__/
+**/__pycache__
