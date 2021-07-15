@@ -22,7 +22,7 @@ and it's done.
 
 # dependencies
 
-In order to use **Finance** one need some packages already 
+In order to use **Finance** one need some packages already `prova`
 install:
 
 -python>3.7
