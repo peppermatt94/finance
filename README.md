@@ -107,10 +107,12 @@ samples have statistical limit.
 finance graphix --stocks
 ```
 Have as output:
+![alt text](https://github.com/peppermatt94/finance/blob/main/img/stocks.png)
 ```
 finance graphix --dReturns
 ```
 Have as output:
+![alt text](https://github.com/peppermatt94/finance/blob/main/img/dReturns.png)
 This subcommand is tought to be used at the end of a pipeline.
 ```
 finance --company amzn ito --BM 100 | finance graphix --stocks
