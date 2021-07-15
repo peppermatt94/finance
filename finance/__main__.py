@@ -10,6 +10,21 @@ import DataAnalyzers as DA
 from simulation import GBM, BM, Levy
 from datetime import datetime
 
+def progress(Text):
+    #####################################
+    sys.stdout.write("\r."+" "*100) #Is needed to wash all the line
+    text = u"\r" +Text
+    sys.stdout.write(text)
+    sys.stdout.flush()
+    ######################################
+def error(Text):
+    #####################################
+    sys.stdout.write("\r."+" "*100) #Is needed to wash all the line
+    text = u"\r\033[0;31m" +Text
+    sys.stdout.write(text)
+    sys.stdout.flush()
+    ######################################
+
 def main():
     import argparse
     from colorama import init
@@ -17,12 +32,13 @@ def main():
     
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(help='possible actions', dest='subparser')
-   
+    
     parser.add_argument("--company", 
         help="Select a company with its name or its " +
              "ticker. --list-of-companies for a list " + 
              "of companies and tickers",
         default = "msft")
+    
     parser.add_argument("--list_of_companies", 
         help="Select a company with its name or its " +
              "ticker. --list-of-companies for a list " + 
@@ -31,7 +47,7 @@ def main():
     ito = subparsers.add_parser("ito", 
         help= "Simulate the next 3 of 6 months of "+
               "the stock of the company with ITO process")
-    
+   
     ito.add_argument("--BM", type = int, 
         help="Select the brownian motion as ITO process: \n"+
              "dX_t = drift*dt + vol*dW_t \ndrift and vol "+
@@ -51,7 +67,7 @@ def main():
     
     graphix = subparsers.add_parser("graphix", 
         help="the subcommand that call graphical instrument of program")
-    
+   
     graphix.add_argument("--stocks",
         help= "show the variation of stock price of the company",action='store_true')
     
@@ -61,12 +77,12 @@ def main():
     args = parser.parse_args()
     
     
-    
-    try:    
+    try:  
+        progress("Loading financial data from yahoo finance")
         company_info = yf.Ticker(args.company).history(period = "max")
     except:
         #Exception needed since sometimes yahoo finance put some limit of download
-        print("\033[0;31m", end = " JSON error: yahoo finance have some problem. retry later!!")
+        error("JSON error: yahoo finance have some problem. retry later!!")
         sys.exit()  
     
     if args.list_of_companies:
@@ -77,24 +93,30 @@ def main():
     #Brownian Motion
     if args.subparser == "ito":
         if args.BM != None:
+            progress("Starting ITO simulation BM")
             simulation = BM(args.BM, company_info)
             
         #Geometric Brownian Motion
         if args.GBM != None:
+            progress("Starting ITO simulation GBM")
             simulation = GBM(args.GBM, company_info)
         
         #Levy process
         if args.levy != None:
+            progress("Starting ITO simulation levy")
             simulation = Levy(args.levy, company_info)
     
     if args.subparser == "graphix":
         # graphix subcommand options:
         if args.stocks:
+            progress("I'm preparing the plot")
             DA.plot_stocks_data(company_info, yf.Ticker(args.company).info["longName"])
+            progress("done")
             
         if args.dReturns:
+            progress("Preparing the plot")
             DA.plot_daily_returns_stats(company_info,  yf.Ticker(args.company).info["longName"])
             
-        
+    progress("\u001b[32;1mdone")
 if __name__=='__main__':
     main()
