@@ -1,7 +1,7 @@
 # Finance
 ## A CLI to download, analyze and simulate economic data
 
-**Finance** is a CLI designed for study purpose.
+**Finance** is a CLI designed for accademic purpose.
  It use the yahoo finance REST API to download economic data.
 One can select a company from those presents in the yahoo finance database 
 (see documentation) and from that one can make ITO simulations:
