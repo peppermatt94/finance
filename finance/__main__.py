@@ -1,13 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-
-Ideas for the following program:
-
-    Montecarlo simulation for pricing,
-    Command Line Interface program
-    I 'll write something and i hope something work
-
-"""
 import numpy as np
 import pandas as pd
 import matplotlib.pylab as plt
@@ -24,7 +15,6 @@ def main():
     from colorama import init
     init()  #init() enable windows powershell to ANSI string format
     
-    ciao = sys.argv[1:]
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(help='possible actions', dest='subparser')
    
@@ -33,7 +23,7 @@ def main():
              "ticker. --list-of-companies for a list " + 
              "of companies and tickers",
         default = "msft")
-    parser.add_argument("--list-of-companies", 
+    parser.add_argument("--list_of_companies", 
         help="Select a company with its name or its " +
              "ticker. --list-of-companies for a list " + 
              "of companies and tickers", action='store_true')
@@ -70,10 +60,7 @@ def main():
     
     args = parser.parse_args()
     
-    """
-    if args.company is not in listOfcompany:
-        raise error
-    """
+    
     
     try:    
         company_info = yf.Ticker(args.company).history(period = "max")
@@ -81,7 +68,10 @@ def main():
         #Exception needed since sometimes yahoo finance put some limit of download
         print("\033[0;31m", end = " JSON error: yahoo finance have some problem. retry later!!")
         sys.exit()  
-        
+    
+    if args.list_of_companies:
+        listOfCompanies = pd.read_csv("tick.txt", sep = ";")
+        print(listOfCompanies)
     #ito subcommands options:    
     
     #Brownian Motion
