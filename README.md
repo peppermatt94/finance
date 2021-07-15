@@ -25,11 +25,11 @@ and it's done.
 In order to use **Finance** one need some packages already 
 install:
 
--python>3.7
--matplotlib
--scipy
--yfinance
--pandas
+*python>3.7
+*matplotlib
+*scipy
+*yfinance
+*pandas
 
 to install all dependencies:
 ```
