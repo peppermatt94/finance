@@ -9,6 +9,9 @@ sys.path.append(os.getcwd())
 import DataAnalyzers as DA
 from simulation import GBM, BM, Levy
 from datetime import datetime
+import logging
+logging.basicConfig(level=logging.INFO, filename='finance.log', filemode='w',
+                    format='%(name)s - %(levelname)s - %(message)s')
 
 def progress(Text):
     #####################################
@@ -16,13 +19,15 @@ def progress(Text):
     text = u"\r" +Text
     sys.stdout.write(text)
     sys.stdout.flush()
+    logging.info(Text)
     ######################################
 def error(Text):
     #####################################
     sys.stdout.write("\r."+" "*100) #Is needed to wash all the line
     text = u"\r\033[0;31m" +Text
-    sys.stdout.write(text)
+    sys.stderr.write(text)
     sys.stdout.flush()
+    logging.error(Text)
     ######################################
 
 def main():
