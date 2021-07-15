@@ -1,0 +1,34 @@
+TICKS;COMPANY
+MSFT;Microsoft Corporation
+AMZN;Amazon
+TSLA;Tesla Motors
+TSM;Taiwan Semiconductor Manufacturing Company Limited
+GME;GameStop Corp.
+UNH;UnitedHealth Group Incorporated
+SPWR;SunPower Corporation
+YVR;Liquid Media Group Ltd.
+NFLX;Netflix, Inc.
+CIDM;Cinedigm Corp.
+NKLA;Nikola Corporation
+VERB;Verb Technology Company, Inc.
+NVDA;NVIDIA Corporation	
+SAVA;Cassava Sciences, Inc.
+ATD-B.TO;Alimentation Couche-Tard Inc.
+JKS;JinkoSolar Holding Co., Ltd.
+AMC;AMC Entertainment Holdings, Inc.
+LCLP;Life Clips, Inc.
+JMIA;Jumia Technologies AG
+ARLO;Arlo Technologies, Inc.
+BIIB;Biogen Inc.
+MS;Morgan Stanley
+RIDE;Lordstown Motors Corp.
+HUDI;Huadi International Group Co., Ltd.
+AACG;ATA Creativity Global
+DRNG;Drone Guarder, Inc.
+^IXIC;Nasdaq
+WISH;ContextLogic Inc.
+TFX;Teleflex Incorporated
+GLPG;Galapagos NV
+VRPX;Virpax Pharmaceuticals, Inc.
+PGR;The Progressive Corporation
+NXPI;NXP Semiconductors N.V.
