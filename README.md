@@ -127,7 +127,7 @@ I advice to select ever an output, and use the program in a pipe style with grap
 
 ## Graphix
 
-The 'graphix' subcommand allow you to get a graphical output of stock or simulation. 
+The `graphix` subcommand allow you to get a graphical output of stock or simulation. 
 It take the input file (see input and output) and create stocks price graph with the
 `--stocks` command or dayly returns histogram with the `dReturns` command.
 The usual command: 
