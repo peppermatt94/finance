@@ -49,78 +49,116 @@ def main():
              "ticker. --list-of-companies for a list " + 
              "of companies and tickers", action='store_true')
     
+    parser.add_argument("--input", type = str, 
+        help="Select a company with its name or its " +
+             "ticker. --list-of-companies for a list " + 
+             "of companies and tickers", 
+             default= None)
+    
+    parser.add_argument("--output", type = str, 
+        help="Select a company with its name or its " +
+             "ticker. --list-of-companies for a list " + 
+             "of companies and tickers", 
+             default="simulation.csv")
+    
     ito = subparsers.add_parser("ito", 
-        help= "Simulate the next 3 of 6 months of "+
-              "the stock of the company with ITO process")
-   
+        help= "ITO simulation for the choosen company. You "+
+              "must choose among brownian motion"+
+              "simulation, geometric brownian motion or levy")
+
     ito.add_argument("--BM", type = int, 
         help="Select the brownian motion as ITO process: \n"+
              "dX_t = drift*dt + vol*dW_t \ndrift and vol "+
              "are computed from company data")
-    
+
     ito.add_argument("--GBM", type = int,
        help="Select the brownian motion as ITO process: \n"+
              "dX_t = drift*X_t*dt + vol*X_t*dW_t \ndrift "+
              " and vol are computed from company data")#, default = "n")
-    
+
     ito.add_argument("--levy", type = int,
        help="Select the brownian motion as ITO process: \n"+
              "dX_t = drift*dt + vol*dW_t + dJ_t \ndrift "+
              " and vol are computed from company data. Here" +
              "dJ_t is a poissonian random variable that create"+
              "a jump: you can pass jump and jump size as parameters")#, default = "n")
-    
+
     graphix = subparsers.add_parser("graphix", 
-        help="the subcommand that call graphical instrument of program")
-   
+        help="the subcommand that call graphical instruments of the program")
+
     graphix.add_argument("--stocks",
         help= "show the variation of stock price of the company",action='store_true')
-    
+
     graphix.add_argument("--dReturns",
         help= "show the variation of stock price of the company",action='store_true')
-    
+
     args = parser.parse_args()
-    
-    
-    try:  
-        progress("Loading financial data from yahoo finance")
-        company_info = yf.Ticker(args.company).history(period = "max")
-    except:
-        #Exception needed since sometimes yahoo finance put some limit of download
-        error("JSON error: yahoo finance have some problem. retry later!!")
-        sys.exit()  
-    
+
     if args.list_of_companies:
         listOfCompanies = pd.read_csv("tick.txt", sep = ";")
-        print(listOfCompanies)
+        print(listOfCompanies.to_markdown())
+        sys.exit()
+
+    if args.input == None:
+        try:  
+            progress("Loading financial data from yahoo finance")
+            company_info = yf.Ticker(args.company).history(period = "max").dropna()
+            name_company = yf.Ticker(args.company).info["longName"]
+        except:
+            #Exception needed since sometimes yahoo finance put some limit of download
+            error("There's some problem in downloading yahoo finance database.")
+            sys.exit()  
+    else:
+        try:
+            progress("Loading financial data from pipeline")
+
+            company_info = pd.read_csv(args.input)#.dropna()
+            Renaming_column = company_info.columns[0]
+            company_info.rename(columns = {Renaming_column: "Date"}, inplace = True)
+            company_info["Date"] = pd.DatetimeIndex(company_info["Date"])
+            company_info = company_info.set_index(["Date"])
+
+            name_company = company_info["longName"].iloc[0]
+
+        except:
+            error("There's some problem in reading input database")
+            sys.exit()
+
     #ito subcommands options:    
-    
-    #Brownian Motion
+
+   
     if args.subparser == "ito":
         if args.BM != None:
+        #Brownian Motion
             progress("Starting ITO simulation BM")
-            simulation = BM(args.BM, company_info)
-            
+            simulation = BM(args.BM, company_info).Euler_Maruyama()
+            simulation["longName"] = name_company + " BM simulation"
+            simulation.to_csv(args.output)
+
         #Geometric Brownian Motion
         if args.GBM != None:
             progress("Starting ITO simulation GBM")
             simulation = GBM(args.GBM, company_info)
-        
+            simulation["longName"] = name_company + " GBM simulation"
+            simulation.to_csv(args.output)
+
         #Levy process
         if args.levy != None:
             progress("Starting ITO simulation levy")
-            simulation = Levy(args.levy, company_info)
-    
+            simulation = Levy(args.levy, company_info).Euler_Maruyama()
+            simulation["longName"] = name_company + " LEVY simulation"
+            simulation.to_csv(args.output)
+
     if args.subparser == "graphix":
         # graphix subcommand options:
         if args.stocks:
-            progress("I'm preparing the plot")
-            DA.plot_stocks_data(company_info, yf.Ticker(args.company).info["longName"])
+            progress("Preparing the plot")
+            DA.plot_stocks_data(company_info, name_company)
             progress("done")
-            
+
         if args.dReturns:
             progress("Preparing the plot")
-            DA.plot_daily_returns_stats(company_info,  yf.Ticker(args.company).info["longName"])
+            DA.plot_daily_returns_stats(company_info,  name_company)
             
     progress("\u001b[32;1mdone")
 if __name__=='__main__':

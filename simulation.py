@@ -1,32 +1,31 @@
-import numpy as np
-import pandas as pd
-import matplotlib.pylab as plt
 from datetime import datetime
 from numpy import random as rd
 from tqdm import tqdm
 from dataclasses import dataclass
+import numpy as np
+import pandas as pd
+import matplotlib.pylab as plt
 import scipy.stats as st
-from scipy.stats import levy
+
 
 @dataclass
 class ITO_simulation:
     """
     Principle class: it take the pandas dataframe of the stock prices
-    and the number of days in which the simulation must be perfomed. 
-    
+    and the number of days in which the simulation must be perfomed.
     ITO processes are extended class of this one.
     """
-    number_of_days : int
-    data_of_period : pd.DataFrame()
-    
+    number_of_days: int
+    data_of_period: pd.DataFrame()
+
     __version__ = (0, 1, 0)
-    
+
     @property
     def T(self):
         """
         Parameters
         ----------
-        self : ITO_simulation instance. In particular you need the 
+        self : ITO_simulation instance. In particular you need the
              number of days to get the datetime index
         Returns
         -------
@@ -36,22 +35,22 @@ class ITO_simulation:
         """
         starting_date = self.data_of_period.index[-1]
         return pd.date_range(starting_date, periods=self.number_of_days)
-    
-    
+
+
     def daily_return(self):
         '''Estimation of the expected return from known data
 
         Parameters
         ----------
         self : ITO_simulation instance. In particular, you need here
-            "Close" column of "data_of_period", in which are 
+            "Close" column of "data_of_period", in which are
             conserved the historical stock price data.
-            
+
         Returns
         -------
         A list of returns, i.e. the difference, in each day, between the today price
             and the yesterday price.
-        
+
         References
         ----------
         J.C.Hull, Options, futures and others derivatives, ch. 7.
@@ -70,14 +69,14 @@ class ITO_simulation:
         '''Estimation of the volatility from the known data
         Parameters
         ----------
-        self : ITO_simulation instance. 
-        
+        self : ITO_simulation instance.
+
         Returns
         -------
         Expected returns mu (also named 'drift' in brownian process)
-        and Volatility predicted by the data_of_period in the 
+        and Volatility predicted by the data_of_period in the
         ITO_simulation instance
-    
+
         References
         ----------
         J.C.Hull, Options, futures and others derivatives, ch. 7.
@@ -86,61 +85,59 @@ class ITO_simulation:
         mu = np.mean(returns)           # drift coefficient
         sigma = np.std(returns)         #volatility coefficient
         return mu, sigma
-    
-    
-    #def Euler_Maruyama(a,b,x0,data_of_simulation_period_void):    #Integration of the black scholes equation: ITO process
+
+
     def Euler_Maruyama(self):
         '''Integration of the ITO process. Here i use euler-maruyama approximation
-        
+
         Parameters
         ----------
         self : ITO_simulation instance. Actually, it need in particular
             self.T as the period in which the simulation is performed
             and self.data_of_period to get mu and sigma
-        
+
         Returns
         -------
         data_of_simulation_period filled with a certain ITO process,
         by the euler-maruyama approximation
-        
+
         References
         https://en.wikipedia.org/wiki/Euler%E2%80%93Maruyama_method
         '''
-        #I use two tmp variables to make code more readable:  
+        #I use two tmp variables to make code more readable:
         x0 = self.data_of_period["Close"].iloc[-1]
         T = self.T
         x = np.empty(self.number_of_days)
         x[0] = x0
         self._drift, self._vol = self.mu_and_sigma_estimation()
-        with tqdm(total=self.number_of_days) as pbar:
-            for i in range(self.number_of_days-1):
-                dt = (T[i+1]-T[i]).days
-                t = (T[i+1]-T[0]).days
-                dWt = np.sqrt(dt) * rd.randn() 
-                
-                if hasattr(self, "jump"): 
-                    intensity = self.jump_intensity_func(t, x[i])
-                    N = rd.poisson(intensity*dt)
-                    jump_addend = N*self.jump_size
-                else:
-                    jump_addend = 0
-                    
-                x[i+1] = x[i] + self.drift(t, x[i])*dt + self.vol(t, x[i])*dWt +jump_addend
-                pbar.update(1)
-           
-        data_of_simulation_period_full = pd.DataFrame({"Close": pd.Series(x, index = T)})
-        
+        for i in range(self.number_of_days-1):
+            dt = (T[i+1]-T[i]).days
+            t = (T[i+1]-T[0]).days
+            dWt = np.sqrt(dt) * rd.randn()
+
+            if hasattr(self, "jump"):
+                intensity = self.jump_intensity_func(t, x[i])
+                N = rd.poisson(intensity*dt)
+                jump_addend = N*self.jump_size
+            else:
+                jump_addend = 0   
+            x[i+1] = x[i] + self.drift(t, x[i])*dt + self.vol(t, x[i])*dWt +jump_addend
+            
+
+        data_of_simulation_period_full = pd.DataFrame({"Close": pd.Series(x, index=T)})
+
         return data_of_simulation_period_full
-@dataclass 
+@dataclass
 class BM(ITO_simulation):
     """Simulate a drifted Brownian motion
     dX_t = drift*dt + vol*dW_t
     where drift and vol are real numbers
     """
-    number_of_days : int
-    data_of_period : pd.DataFrame()
+    number_of_days: int
+    data_of_period: pd.DataFrame()
     _drift: float = 0.0 
     _vol: float = 1.0
+
     
     def drift(self, t, x) -> float:
         return self._drift
@@ -154,11 +151,11 @@ class GBM(ITO_simulation):
     dX_t = drift*X_t*dt + vol*X_t*dW_t
     where drift and vol are real numbers
     """
-    number_of_days : int
-    data_of_period : pd.DataFrame()
+    number_of_days: int
+    data_of_period: pd.DataFrame()
     _drift: float = 0 
     _vol: float = 1
-    
+
     def drift(self, t, x) -> float:
         return self._drift * x
 
@@ -172,21 +169,21 @@ class Levy(ITO_simulation):
     where drift and vol are real numbers, dJ_t a poissonian variable
     that create a jump.
     """
-    number_of_days : int
-    data_of_period : pd.DataFrame()
+    number_of_days: int
+    data_of_period: pd.DataFrame()
     _drift: float = 0.0
     _vol: float = 1.0
-    jump: float = 0.01      # the default value are to give an idea    
+    jump: float = 0.01      # the default value are to give an idea
     jump_size: float = 0.1  # of the order of magnitude of the values
-    
-    
+
+
     # Here i assume the jump intensity doesn't depend on time
     # and space. Future development could evaluate a property.setter 
     # in which one can pass a callable
-    def jump_intensity_func(self, t,x) -> float:
+    def jump_intensity_func(self, t, x) -> float:
         return self.jump 
-    
-    
+
+
     def drift(self, t, x) -> float:
         return self._drift
 
