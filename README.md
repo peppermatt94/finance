@@ -8,8 +8,7 @@ One can select a company from those presents in the yahoo finance database
 brownian motion simulation, geometric brownian motion and 
 levy motion.
 
-# Current Build Status
-main branch **pass**
+
 
 # Installing Finance
 
