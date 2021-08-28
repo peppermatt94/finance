@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Aug 26 20:44:30 2021
-
-@author: pepermatt94
-"""
-
 import pandas as pd
 import numpy.random as rn
 from hypothesis import given, settings
