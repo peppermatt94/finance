@@ -25,11 +25,12 @@ In order to use **Finance** the following packages should be enough:
 
 * python>3.7
 * matplotlib
+* numpy
 * scipy
 * yfinance
 * pandas
 
-If you want to be sure all dependencies are installed, you can
+They are already embedded in the installation in the `setup.py`. If you want to be sure all dependencies are installed, you can
 do:
 ```
 cd finance
