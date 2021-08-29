@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Aug 26 20:43:55 2021
-
-@author: pepermatt94
-"""
-
 import pandas as pd
 import numpy.random as rn
 import numpy as np
@@ -41,7 +34,6 @@ class simulation_Tests(unittest.TestCase):
     @settings(deadline=None)
     def test_all_equal_values_give_null_vol(self, x):
         x = x.sort_index()
-        x.to_csv("simulation.csv")
         mu, sigma = BM(100, x).mu_and_sigma_estimation()
         self.assertEqual( sigma, 0)
 
@@ -53,7 +45,6 @@ class simulation_Tests(unittest.TestCase):
     @settings(deadline=None)
     def test_all_equal_values_give_same_mu(self, x):
         x = x.sort_index()
-        x.to_csv("simulation.csv")
         mu, sigma = BM(100, x).mu_and_sigma_estimation()
         self.assertEqual( mu, 0)  
    

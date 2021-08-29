@@ -1,11 +1,7 @@
-from datetime import datetime
 from numpy import random as rd
-from tqdm import tqdm
 from dataclasses import dataclass
 import numpy as np
 import pandas as pd
-import matplotlib.pylab as plt
-import scipy.stats as st
 
 
 @dataclass
@@ -14,6 +10,13 @@ class ITO_simulation:
     Principle class: it take the pandas dataframe of the stock prices
     and the number of days in which the simulation must be perfomed.
     ITO processes are extended class of this one.
+
+    Parameters
+    -----------
+    number_of_days : the period of the simulation expressed in number
+                    of days
+  
+    data_of_period: the historical data of the company.
     """
     number_of_days: int
     data_of_period: pd.DataFrame()
@@ -29,7 +32,7 @@ class ITO_simulation:
              number of days to get the datetime index
         Returns
         -------
-        A date range from the final date in data_of_period and the 
+        A date range from the final date in data_of_period and the
         period present in number of step.
 
         """
@@ -56,13 +59,15 @@ class ITO_simulation:
         J.C.Hull, Options, futures and others derivatives, ch. 7.
 
         '''
+        self.data_of_period = self.data_of_period.dropna() # i need some brute force for nan error.
         Close_prices = self.data_of_period["Close"].values
         returns = []
         for i in range(0, len(Close_prices)-1):
-            today = Close_prices[i+1]
-            yesterday = Close_prices[i]
-            daily_return = (today - yesterday)/yesterday
-            returns.append(daily_return)
+            today = float(Close_prices[i+1])   # i need some brute force for casting errors
+            yesterday = float(Close_prices[i])
+            if yesterday != 0:
+                daily_return = (today - yesterday)/yesterday
+                returns.append(daily_return)
         return returns
 
     def mu_and_sigma_estimation(self):
@@ -120,9 +125,8 @@ class ITO_simulation:
                 N = rd.poisson(intensity*dt)
                 jump_addend = N*self.jump_size
             else:
-                jump_addend = 0   
+                jump_addend = 0
             x[i+1] = x[i] + self.drift(t, x[i])*dt + self.vol(t, x[i])*dWt +jump_addend
-            
 
         data_of_simulation_period_full = pd.DataFrame({"Close": pd.Series(x, index=T)})
 
@@ -135,17 +139,17 @@ class BM(ITO_simulation):
     """
     number_of_days: int
     data_of_period: pd.DataFrame()
-    _drift: float = 0.0 
+    _drift: float = 0.0
     _vol: float = 1.0
 
-    
+
     def drift(self, t, x) -> float:
         return self._drift
 
     def vol(self, t, x) -> float:
         return self._vol
 
-@dataclass   
+@dataclass
 class GBM(ITO_simulation):
     """Simulate a drifted Geometric Brownian motion
     dX_t = drift*X_t*dt + vol*X_t*dW_t
@@ -153,7 +157,7 @@ class GBM(ITO_simulation):
     """
     number_of_days: int
     data_of_period: pd.DataFrame()
-    _drift: float = 0 
+    _drift: float = 0
     _vol: float = 1
 
     def drift(self, t, x) -> float:
@@ -173,15 +177,15 @@ class Levy(ITO_simulation):
     data_of_period: pd.DataFrame()
     _drift: float = 0.0
     _vol: float = 1.0
-    jump: float = 0.01      # the default value are to give an idea
+    jump: float = 0.01      # the default values are there to give an idea
     jump_size: float = 0.1  # of the order of magnitude of the values
 
 
     # Here i assume the jump intensity doesn't depend on time
-    # and space. Future development could evaluate a property.setter 
+    # and space. Future development could evaluate a property.setter
     # in which one can pass a callable
     def jump_intensity_func(self, t, x) -> float:
-        return self.jump 
+        return self.jump
 
 
     def drift(self, t, x) -> float:

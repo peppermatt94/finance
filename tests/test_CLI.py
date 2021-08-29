@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Aug 26 20:44:30 2021
-
-@author: pepermatt94
-"""
-
 import pandas as pd
 import numpy.random as rn
 from hypothesis import given, settings
@@ -28,19 +21,19 @@ class CLI_Tests(unittest.TestCase):
         x[x.Close>1000] = 1000
         x.longName = "prova"
         x.to_csv("simulation.csv")
-        code_output = subprocess.run("finance --input simulation.csv ito --BM 100", capture_output = False)
+        code_output = subprocess.run("finance --input simulation.csv ito --BM 100", stdout=subprocess.DEVNULL)# capture_output = False)
         self.assertEqual( code_output.returncode, 0)
     
     #@unittest.skip("demonstrated")    
     def test_tick_list_folder_independence(self):
-        folder1 = subprocess.run("finance --list_of_companies", capture_output = False)
+        folder1 = subprocess.run("finance --list_of_companies", stdout=subprocess.DEVNULL)#capture_output = False)
         os.chdir("C:\\")
-        folder2 = subprocess.run("finance --list_of_companies",capture_output = False)
+        folder2 = subprocess.run("finance --list_of_companies",stdout=subprocess.DEVNULL)#capture_output = False)
         self.assertEqual([folder1.returncode,folder2.returncode], [0,0])
         
     def test_output_file_correctly_created(self):
         file = 'file.csv'
-        subprocess.run(f"finance --output {file}", capture_output = False)
+        subprocess.run(f"finance --output {file}", stdout=subprocess.DEVNULL)#capture_output = False)
         if os.path.exists(file):
             database = pd.read_csv(file)   
             columns = database.columns
@@ -49,7 +42,7 @@ class CLI_Tests(unittest.TestCase):
         
     def test_output_file_ito_simulation_correctly_created(self):
         file = 'file.csv'
-        subprocess.run(f"finance --company msft --output {file} ito --BM 100", capture_output = False)
+        subprocess.run(f"finance --company msft --output {file} ito --BM 100", stdout=subprocess.DEVNULL)#capture_output = False)
         if os.path.exists(file):
             database = pd.read_csv(file)   
             columns = database.columns
@@ -57,5 +50,5 @@ class CLI_Tests(unittest.TestCase):
         self.assertEqual(columns, ['Unnamed: 0','Close','longName'])
         
     def test_logging_file_created_in_script_dir(self):
-        subprocess.run("finance", capture_output = False)
+        subprocess.run("finance", stdout=subprocess.DEVNULL )
         self.assertTrue(os.path.exists("../finance/finance.log"))
