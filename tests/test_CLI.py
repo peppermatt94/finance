@@ -10,6 +10,13 @@ import os
 
 class CLI_Tests(unittest.TestCase):
     #@unittest.skip("demonstrated")
+    def test_principle_commands_work(self):
+        BM_output = subprocess.run("finance --company msft --output 'simulation.csv' ito --BM 100 ; finance --input 'simulation.csv' graphix --stocks", stdout=subprocess.DEVNULL)# capture_output = False)
+        GBM_output = subprocess.run("finance --company msft --output 'simulation.csv' ito --GBM 100 ; finance --input 'simulation.csv' graphix --stocks", stdout=subprocess.DEVNULL)# capture_output = False)
+        levy_output = subprocess.run("finance --company msft --output 'simulation.csv' ito --levy 100 ; finance --input 'simulation.csv' graphix --stocks", stdout=subprocess.DEVNULL)# capture_output = False)
+        self.assertEqual( [BM_output.returncode, GBM_output.returncode, GBM_output.returncode], [0,0,0])
+        
+    #@unittest.skip("demonstrated")
     @given(data_frames(index=indexes(elements=st.datetimes(min_value=pd.Timestamp(2019, 1, 1),
             max_value=pd.Timestamp(2020, 9, 1)),  min_size=15, unique=True),
             columns=[column("Close", elements = st.floats( allow_nan = True, allow_infinity=False), dtype=float),
