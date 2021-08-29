@@ -1,26 +1,29 @@
 # -*- coding: utf-8 -*-
-import numpy as np
-import pandas as pd
-import matplotlib.pylab as plt
-import yfinance as yf #yahoo finance API to download economic database
-import sys
-import os
-sys.path.append(os.getcwd())
-import DataAnalyzers as DA
 from simulation import GBM, BM, Levy
 from datetime import datetime
+import DataAnalyzers as DA
 import logging
-logging.basicConfig(level=logging.INFO, filename='finance.log', filemode='w',
+import sys
+import os
+import numpy as np
+import pandas as pd
+import yfinance as yf #yahoo finance API to download economic database
+
+
+dir_path = os.path.dirname(os.path.realpath(__file__))
+logging.basicConfig(level=logging.INFO, filename= dir_path + '\\finance.log', filemode='w',
                     format='%(name)s - %(levelname)s - %(message)s')
 
-def progress(Text):
+def progress(Text, color):
     #####################################
+    color_output = {"green": "\u001b[32;1m", "red": "\u001b[31m", "Blue": "\u001b[34m", "No": ""}
     sys.stdout.write("\r."+" "*100) #Is needed to wash all the line
-    text = u"\r" +Text
+    text = u"\r" +color_output[color] +Text
     sys.stdout.write(text)
     sys.stdout.flush()
     logging.info(Text)
     ######################################
+
 def error(Text):
     #####################################
     sys.stdout.write("\r."+" "*100) #Is needed to wash all the line
@@ -28,123 +31,128 @@ def error(Text):
     sys.stderr.write(text)
     sys.stdout.flush()
     logging.error(Text)
+    exit(1)
     ######################################
 
 def main():
     import argparse
     from colorama import init
     init()  #init() enable windows powershell to ANSI string format
-    
+
     parser = argparse.ArgumentParser()
-    subparsers = parser.add_subparsers(help='possible actions', dest='subparser')
-    
-    parser.add_argument("--company", 
-        help="Select a company with its name or its " +
-             "ticker. --list-of-companies for a list " + 
-             "of companies and tickers",
-        default = "msft")
-    
-    parser.add_argument("--list_of_companies", 
-        help="Select a company with its name or its " +
-             "ticker. --list-of-companies for a list " + 
-             "of companies and tickers", action='store_true')
-    
-    parser.add_argument("--input", type = str, 
-        help="Select a company with its name or its " +
-             "ticker. --list-of-companies for a list " + 
-             "of companies and tickers", 
-             default= None)
-    
-    parser.add_argument("--output", type = str, 
-        help="Select a company with its name or its " +
-             "ticker. --list-of-companies for a list " + 
-             "of companies and tickers", 
-             default="simulation.csv")
-    
-    ito = subparsers.add_parser("ito", 
-        help= "ITO simulation for the choosen company. You "+
-              "must choose among brownian motion"+
-              "simulation, geometric brownian motion or levy")
+    subparsers = parser.add_subparsers(help='subcommands of the program', dest='subparser')
 
-    ito.add_argument("--BM", type = int, 
-        help="Select the brownian motion as ITO process: \n"+
-             "dX_t = drift*dt + vol*dW_t \ndrift and vol "+
-             "are computed from company data")
+    parser.add_argument("--company", "-co", help="Select a company for the download with its " +
+                        "tick as argument",
+                        default="msft")
 
-    ito.add_argument("--GBM", type = int,
-       help="Select the brownian motion as ITO process: \n"+
-             "dX_t = drift*X_t*dt + vol*X_t*dW_t \ndrift "+
-             " and vol are computed from company data")#, default = "n")
+    parser.add_argument("--list_of_companies", "-lco",
+                        help="Show a short list of ticks associated to " +
+                        "the extended name of the company", 
+                        action='store_true')
 
-    ito.add_argument("--levy", type = int,
-       help="Select the brownian motion as ITO process: \n"+
-             "dX_t = drift*dt + vol*dW_t + dJ_t \ndrift "+
-             " and vol are computed from company data. Here" +
-             "dJ_t is a poissonian random variable that create"+
-             "a jump: you can pass jump and jump size as parameters")#, default = "n")
+    parser.add_argument("--input", "-i", type=str,
+                        help="Take as argument the name of the file from which"+
+                        "read the economic data", 
+                        default=None)
 
-    graphix = subparsers.add_parser("graphix", 
-        help="the subcommand that call graphical instruments of the program")
+    parser.add_argument("--output", "-o", type=str,
+                        help="Take as argument the name of the file to which write"+
+                        "the output of the program",
+                        default="finance.csv")
 
-    graphix.add_argument("--stocks",
-        help= "show the variation of stock price of the company",action='store_true')
+    ito = subparsers.add_parser("ito",
+                                help="ITO simulation for the choosen company. You "+
+                                "must choose among brownian motion"+
+                                "simulation, geometric brownian motion or levy")
 
-    graphix.add_argument("--dReturns",
-        help= "show the variation of stock price of the company",action='store_true')
+    ito.add_argument("--BM", type=int,
+                     help="Select the brownian motion as ITO process: \n"+
+                     "dX_t = drift*dt + vol*dW_t \ndrift and vol "+
+                     "are computed from company data")
+
+    ito.add_argument("--GBM", type=int,
+                     help="Select the brownian motion as ITO process: \n"+
+                     "dX_t = drift*X_t*dt + vol*X_t*dW_t \ndrift "+
+                     " and vol are computed from company data")
+
+    ito.add_argument("--levy", type=int,
+                     help="Select the brownian motion as ITO process: \n"+
+                     "dX_t = drift*dt + vol*dW_t + dJ_t \ndrift "+
+                     " and vol are computed from company data.")
+
+    graphix = subparsers.add_parser("graphix",
+                                    help="the subcommand that call "+
+                                    "graphical instruments of the program")
+
+    graphix.add_argument("--stocks", "-ss",
+                         help="Plot the variation of stock price of the company",
+                         action='store_true')
+
+    graphix.add_argument("--dReturns", "-dr",
+                         help="Plot the histogram of the daily return of the company",
+                         action='store_true')
 
     args = parser.parse_args()
 
     if args.list_of_companies:
-        listOfCompanies = pd.read_csv("tick.txt", sep = ";")
-        print(listOfCompanies.to_markdown())
-        sys.exit()
-
+        try:
+            listOfCompanies = pd.read_csv(dir_path + "\\tick.txt", sep=";")
+            print(listOfCompanies.to_markdown())
+        except:
+            error("Problem in reading the ticks list!! Ensure that in the " + 
+                  "script directory there is the file 'tick.txt'")
+        sys.exit()  
     if args.input == None:
         try:  
-            progress("Loading financial data from yahoo finance")
-            company_info = yf.Ticker(args.company).history(period = "max").dropna()
+            progress("Loading financial data from yahoo finance", "No")
+            company_info = yf.Ticker(args.company).history(period="max").dropna()
             name_company = yf.Ticker(args.company).info["longName"]
+
+            progress("Store file in {}".format(args.output), "No")
+            Data_to_save = company_info
+            Data_to_save["longName"] = name_company
+            Data_to_save.to_csv(args.output)
+
         except:
             #Exception needed since sometimes yahoo finance put some limit of download
-            error("There's some problem in downloading yahoo finance database.")
+            error("Problem in downloading yahoo finance database.")
+            progress("\nControl the syntax of the tick you passed and internet connection", "red")
             sys.exit()  
     else:
         try:
-            progress("Loading financial data from pipeline")
-
-            company_info = pd.read_csv(args.input)#.dropna()
+            progress("Loading financial data from {}".format(args.input), "No")
+            company_info = pd.read_csv(args.input).dropna()
             Renaming_column = company_info.columns[0]
-            company_info.rename(columns = {Renaming_column: "Date"}, inplace = True)
+            company_info.rename(columns={Renaming_column: "Date"}, inplace=True)
             company_info["Date"] = pd.DatetimeIndex(company_info["Date"])
             company_info = company_info.set_index(["Date"])
-
             name_company = company_info["longName"].iloc[0]
-
         except:
-            error("There's some problem in reading input database")
+            error("Problem in reading input database")
+            progress("\nControl if the file you passed actually exist", "red")
             sys.exit()
 
     #ito subcommands options:    
 
-   
     if args.subparser == "ito":
         if args.BM != None:
         #Brownian Motion
-            progress("Starting ITO simulation BM")
+            progress("Starting ITO simulation BM", "No")
             simulation = BM(args.BM, company_info).Euler_Maruyama()
             simulation["longName"] = name_company + " BM simulation"
             simulation.to_csv(args.output)
 
         #Geometric Brownian Motion
         if args.GBM != None:
-            progress("Starting ITO simulation GBM")
+            progress("Starting ITO simulation GBM", "No")
             simulation = GBM(args.GBM, company_info)
             simulation["longName"] = name_company + " GBM simulation"
             simulation.to_csv(args.output)
 
         #Levy process
         if args.levy != None:
-            progress("Starting ITO simulation levy")
+            progress("Starting ITO simulation levy", "No")
             simulation = Levy(args.levy, company_info).Euler_Maruyama()
             simulation["longName"] = name_company + " LEVY simulation"
             simulation.to_csv(args.output)
@@ -152,14 +160,13 @@ def main():
     if args.subparser == "graphix":
         # graphix subcommand options:
         if args.stocks:
-            progress("Preparing the plot")
+            progress("Preparing the plot", "No")
             DA.plot_stocks_data(company_info, name_company)
-            progress("done")
 
         if args.dReturns:
-            progress("Preparing the plot")
-            DA.plot_daily_returns_stats(company_info,  name_company)
-            
-    progress("\u001b[32;1mdone")
-if __name__=='__main__':
+            progress("Preparing the plot", "No")
+            DA.plot_daily_returns_stats(company_info, name_company)
+
+    progress("done", "green")
+if __name__ == '__main__':
     main()
