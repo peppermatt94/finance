@@ -146,7 +146,7 @@ def main():
         #Geometric Brownian Motion
         if args.GBM != None:
             progress("Starting ITO simulation GBM", "No")
-            simulation = GBM(args.GBM, company_info)
+            simulation = GBM(args.GBM, company_info).Euler_Maruyama()
             simulation["longName"] = name_company + " GBM simulation"
             simulation.to_csv(args.output)
 
