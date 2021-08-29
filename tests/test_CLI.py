@@ -50,10 +50,5 @@ class CLI_Tests(unittest.TestCase):
         self.assertEqual(columns, ['Unnamed: 0','Close','longName'])
         
     def test_logging_file_created_in_script_dir(self):
-<<<<<<< HEAD
         subprocess.run("finance", stdout=subprocess.DEVNULL )
         self.assertTrue(os.path.exists("../finance/finance.log"))
-=======
-        subprocess.run("finance", capture_output = False)
-        self.assertTrue(os.path.exists("../finance/finance.log"))
->>>>>>> 22d43d7e791aa1e48e45a1112347e46a11f119ea
