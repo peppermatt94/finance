@@ -11,12 +11,14 @@ import os
 class CLI_Tests(unittest.TestCase):
     #@unittest.skip("demonstrated")
     def test_principle_commands_work(self):
-        BM_output = subprocess.run("finance --company msft --output 'simulation.csv' ito --BM 100 ; finance --input 'simulation.csv' graphix --stocks", stdout=subprocess.DEVNULL)# capture_output = False)
-        GBM_output = subprocess.run("finance --company msft --output 'simulation.csv' ito --GBM 100 ; finance --input 'simulation.csv' graphix --stocks", stdout=subprocess.DEVNULL)# capture_output = False)
-        levy_output = subprocess.run("finance --company msft --output 'simulation.csv' ito --levy 100 ; finance --input 'simulation.csv' graphix --stocks", stdout=subprocess.DEVNULL)# capture_output = False)
-        self.assertEqual( [BM_output.returncode, GBM_output.returncode, GBM_output.returncode], [0,0,0])
+        BM_output = subprocess.run("finance --company msft --output 'simulation.csv' ito --BM 100 ", stdout=subprocess.DEVNULL)
+        GBM_output = subprocess.run("finance --company msft --output 'simulation.csv' ito --GBM 100 ", stdout=subprocess.DEVNULL)
+        levy_output = subprocess.run("finance --company msft --output 'simulation.csv' ito --levy 100", stdout=subprocess.DEVNULL)
+        graphix_stock_output = subprocess.run("finance --input 'simulation.csv' graphix --stocks", stdout=subprocess.DEVNULL, capture_output=False)
+        graphix_dreturn_output = subprocess.run("finance --input 'simulation.csv' graphix --dReturns", stdout=subprocess.DEVNULL,capture_output=False)
+        self.assertEqual( [BM_output.returncode, GBM_output.returncode, levy_output.returncode, graphix_stock_output.returncode, graphix_dreturn_output.returncode], [0, 0, 0, 0, 0])
         
-    #@unittest.skip("demonstrated")
+    @unittest.skip("demonstrated")
     @given(data_frames(index=indexes(elements=st.datetimes(min_value=pd.Timestamp(2019, 1, 1),
             max_value=pd.Timestamp(2020, 9, 1)),  min_size=15, unique=True),
             columns=[column("Close", elements = st.floats( allow_nan = True, allow_infinity=False), dtype=float),
@@ -28,19 +30,19 @@ class CLI_Tests(unittest.TestCase):
         x[x.Close>1000] = 1000
         x.longName = "prova"
         x.to_csv("simulation.csv")
-        code_output = subprocess.run("finance --input simulation.csv ito --BM 100", stdout=subprocess.DEVNULL)# capture_output = False)
+        code_output = subprocess.run("finance --input simulation.csv ito --BM 100", stdout=subprocess.DEVNULL)
         self.assertEqual( code_output.returncode, 0)
     
     #@unittest.skip("demonstrated")    
     def test_tick_list_folder_independence(self):
-        folder1 = subprocess.run("finance --list_of_companies", stdout=subprocess.DEVNULL)#capture_output = False)
+        folder1 = subprocess.run("finance --list_of_companies", stdout=subprocess.DEVNULL)
         os.chdir("C:\\")
-        folder2 = subprocess.run("finance --list_of_companies",stdout=subprocess.DEVNULL)#capture_output = False)
+        folder2 = subprocess.run("finance --list_of_companies",stdout=subprocess.DEVNULL)
         self.assertEqual([folder1.returncode,folder2.returncode], [0,0])
         
     def test_output_file_correctly_created(self):
         file = 'file.csv'
-        subprocess.run(f"finance --output {file}", stdout=subprocess.DEVNULL)#capture_output = False)
+        subprocess.run(f"finance --output {file}", stdout=subprocess.DEVNULL)
         if os.path.exists(file):
             database = pd.read_csv(file)   
             columns = database.columns
@@ -49,7 +51,7 @@ class CLI_Tests(unittest.TestCase):
         
     def test_output_file_ito_simulation_correctly_created(self):
         file = 'file.csv'
-        subprocess.run(f"finance --company msft --output {file} ito --BM 100", stdout=subprocess.DEVNULL)#capture_output = False)
+        subprocess.run(f"finance --company msft --output {file} ito --BM 100", stdout=subprocess.DEVNULL)
         if os.path.exists(file):
             database = pd.read_csv(file)   
             columns = database.columns
