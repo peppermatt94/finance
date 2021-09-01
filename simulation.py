@@ -17,13 +17,25 @@ class ITO_simulation:
                     of days
   
     data_of_period: the historical data of the company.
+    
+    Methods
+    ------------
+    T : create a data range from the final date in data_of_period and the
+        period present in number_of_days
+    
+    daily_return : return a list that contain the difference, in each day, between the today price
+            and the yesterday price
+            
+    mu_and_sigma_estimation: method that estimate mu and sigma from historycal data
+    
+    Euler_Maruyama : the proper simulation method, it embeds all the methods
+                     in order to do ito simulation with euler_maruyama approximation 
     """
     number_of_days: int
     data_of_period: pd.DataFrame()
 
     __version__ = (0, 1, 0)
 
-    @property
     def T(self):
         """
         Parameters
@@ -38,7 +50,6 @@ class ITO_simulation:
         """
         starting_date = self.data_of_period.index[-1]
         return pd.date_range(starting_date, periods=self.number_of_days)
-
 
     def daily_return(self):
         '''Estimation of the expected return from known data
@@ -111,7 +122,7 @@ class ITO_simulation:
         '''
         #I use two tmp variables to make code more readable:
         x0 = self.data_of_period["Close"].iloc[-1]
-        T = self.T
+        T = self.T()
         x = np.empty(self.number_of_days)
         x[0] = x0
         self._drift, self._vol = self.mu_and_sigma_estimation()
@@ -186,7 +197,6 @@ class Levy(ITO_simulation):
     # in which one can pass a callable
     def jump_intensity_func(self, t, x) -> float:
         return self.jump
-
 
     def drift(self, t, x) -> float:
         return self._drift
