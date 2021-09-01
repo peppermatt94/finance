@@ -103,36 +103,38 @@ def main():
             error("Problem in reading the ticks list!! Ensure that in the " + 
                   "script directory there is the file 'tick.txt'")
         sys.exit()  
+        
     if args.input == None:
         try:  
             progress("Loading financial data from yahoo finance", "No")
             company_info = yf.Ticker(args.company).history(period="max").dropna()
             name_company = yf.Ticker(args.company).info["longName"]
 
-            progress("Store file in {}".format(args.output), "No")
-            Data_to_save = company_info
-            Data_to_save["longName"] = name_company
-            Data_to_save.to_csv(args.output)
-
         except:
             #Exception needed since sometimes yahoo finance put some limit of download
             error("Problem in downloading yahoo finance database.")
             progress("\nControl the syntax of the tick you passed and internet connection", "red")
             sys.exit()  
+        
+        progress("Store file in {}".format(args.output), "No")
+        Data_to_save = company_info
+        Data_to_save["longName"] = name_company
+        Data_to_save.to_csv(args.output)
     else:
         try:
             progress("Loading financial data from {}".format(args.input), "No")
             company_info = pd.read_csv(args.input).dropna()
-            Renaming_column = company_info.columns[0]
-            company_info.rename(columns={Renaming_column: "Date"}, inplace=True)
-            company_info["Date"] = pd.DatetimeIndex(company_info["Date"])
-            company_info = company_info.set_index(["Date"])
-            name_company = company_info["longName"].iloc[0]
         except:
             error("Problem in reading input database")
             progress("\nControl if the file you passed actually exist", "red")
             sys.exit()
 
+        Renaming_column = company_info.columns[0]
+        company_info.rename(columns={Renaming_column: "Date"}, inplace=True)
+        company_info["Date"] = pd.DatetimeIndex(company_info["Date"])
+        company_info = company_info.set_index(["Date"])
+        name_company = company_info["longName"].iloc[0]
+    
     #ito subcommands options:    
 
     if args.subparser == "ito":
