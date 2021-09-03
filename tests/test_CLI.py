@@ -106,5 +106,11 @@ class CLI_Tests(unittest.TestCase):
         self.assertEqual(columns, ['Unnamed: 0','Close','longName'])
         
     def test_logging_file_created_in_script_dir(self):
+        '''
+    Given :
+        - program execution.
+    And :
+        - assert the program create the logging file in __main__.py script folder
+    '''    
         subprocess.run("finance", stdout=subprocess.DEVNULL )
         self.assertTrue(os.path.exists("../finance/finance.log"))
