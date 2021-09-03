@@ -15,7 +15,7 @@ levy motion.
 To install **Finance**:
 ```
 git clone https://github.com/peppermatt94/finance
-pip install finance
+pip install -e finance
 ```
 and it's done.
 
