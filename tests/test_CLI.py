@@ -12,9 +12,9 @@ class CLI_Tests(unittest.TestCase):
     #@unittest.skip("demonstrated")
     def test_BMcommand_work(self):
         '''
-    Given :
+    Action:
         - command to perform BM simulation output for 100 days.
-    And :
+    Then :
         - assert the program execute without problem (exit 0)'
     '''    
         BM_output = subprocess.run("finance --company msft --output 'simulation.csv' ito --BM 100 ", stdout=subprocess.DEVNULL)
@@ -22,9 +22,9 @@ class CLI_Tests(unittest.TestCase):
         
     def test_GBMcommand_work(self):
         '''
-    Given :
+    Action :
         - command to perform GBM simulation output for 100 days.
-    And :
+    Then :
         - assert the program execute without problem (exit 0)'
     '''    
         GBM_output = subprocess.run("finance --company msft --output 'simulation.csv' ito --GBM 100 ", stdout=subprocess.DEVNULL)
@@ -32,9 +32,9 @@ class CLI_Tests(unittest.TestCase):
         
     def test_levycommand_work(self):
         '''
-    Given :
+    Action :
         - command to perform levy simulation output for 100 days.
-    And :
+    Then :
         - assert the program execute without problem (exit 0)'
     '''    
         levy_output = subprocess.run("finance --company msft --output 'simulation.csv' ito --levy 100", stdout=subprocess.DEVNULL)
@@ -42,9 +42,9 @@ class CLI_Tests(unittest.TestCase):
     
     def test_graphix_stockcommand_work(self):
         '''
-    Given :
+    Action :
         - command to perform stock graph.
-    And :
+    Then :
         - assert the program execute without problem (exit 0)'
     '''    
         graphix_stock_output = subprocess.run("finance --input 'simulation.csv' graphix --stocks", stdout=subprocess.DEVNULL, capture_output=False)
@@ -52,9 +52,9 @@ class CLI_Tests(unittest.TestCase):
    
     def test_graphix_dReturnscommands_work(self):
         '''
-    Given :
+    Action :
         - command to perform the daily return graph.
-    And :
+    then :
         - assert the program execute without problem (exit 0)'
     '''    
         graphix_dreturn_output = subprocess.run("finance --input 'simulation.csv' graphix --dReturns", stdout=subprocess.DEVNULL,capture_output=False)
@@ -63,9 +63,11 @@ class CLI_Tests(unittest.TestCase):
     #@unittest.skip("demonstrated")    
     def test_tick_list_folder_independence(self):
         '''
-    Given :
-        - program ran list_of_company command in different folders.
-    And :
+    Action :
+        - program run list_of_company command in a folder.
+        - change folder
+        - program run list_of_company command in the new folder.
+    Then :
         - assert the  program execute without problem (exit 0)'
     '''    
         folder1 = subprocess.run("finance --list_of_companies", stdout=subprocess.DEVNULL)
@@ -75,14 +77,25 @@ class CLI_Tests(unittest.TestCase):
         
     def test_output_file_correctly_created(self):
         '''
-    Given :
+    Action :
         - program create an output file in file.csv.
     And :
-        - assert the  program create the file in current folder'
+        - assert the  program create the file in current folder
     '''    
         file = 'file.csv'
         subprocess.run(f"finance --output {file}", stdout=subprocess.DEVNULL)
         self.assertTrue(os.path.exists(file))
+        
+    def test_output_file_correctly_formatted(self):
+        '''
+    Action :
+        - program create an output file in file.csv.
+        - read the file and the column of the dataframe in file
+    And :
+        - assert the columns are correctly created'
+    '''    
+        file = 'file.csv'
+        subprocess.run(f"finance --output {file}", stdout=subprocess.DEVNULL)
         database = pd.read_csv(file)   
         columns = database.columns
         columns = columns.to_list()
@@ -91,15 +104,26 @@ class CLI_Tests(unittest.TestCase):
      
     def test_output_file_ito_simulation_correctly_created(self):
         '''
-    Given :
+    Action :
         - program create an output file of the ito simulation .
-    And :
+        
+    Then :
         - assert the program create the file correcly in the current folder
-        - assert the program create the file with well formatted columns'
     '''    
         file = 'file.csv'
         subprocess.run(f"finance --company msft --output {file} ito --BM 100", stdout=subprocess.DEVNULL)
         self.assertTrue(os.path.exists(file))
+        
+    def test_output_file_ito_simulation_correctly_formatted(self):
+        '''
+    Action :
+        - program create an output file of the ito simulation .
+        - read the file and the column of the dataframe in file
+    Then :
+        - assert the program create the file with well formatted columns'
+    '''    
+        file = 'file.csv'
+        subprocess.run(f"finance --company msft --output {file} ito --BM 100", stdout=subprocess.DEVNULL)
         database = pd.read_csv(file)   
         columns = database.columns
         columns = columns.to_list()     
@@ -107,9 +131,9 @@ class CLI_Tests(unittest.TestCase):
         
     def test_logging_file_created_in_script_dir(self):
         '''
-    Given :
+    Action :
         - program execution.
-    And :
+    Then :
         - assert the program create the logging file in __main__.py script folder
     '''    
         subprocess.run("finance", stdout=subprocess.DEVNULL )
