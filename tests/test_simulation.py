@@ -51,7 +51,7 @@ class simulation_Tests(unittest.TestCase):
     So:
         - sorting the dataframe respect to date
         - imposing upper and lower limit to avoid random generation of too big or too small values 
-        - saving in variable 'return' the list of daily_returns
+        - saving in variable 'return' the list of daily_returns with GBM
     And :
         - assert the number of nan in list (count) is zero (nan suppression)'
         '''    
@@ -78,7 +78,7 @@ class simulation_Tests(unittest.TestCase):
     So:
         - sorting the dataframe respect to date
         - imposing upper and lower limit to avoid random generation of too big or too small values 
-        - saving in variable 'return' the list of daily_returns
+        - saving in variable 'return' the list of daily_returns with levy
     And :
         - assert the number of nan in list (count) is zero (nan suppression)'
         '''    
@@ -252,7 +252,7 @@ class simulation_Tests(unittest.TestCase):
     so:
         - create a BM simulation in simulated_array
     And :
-        - assert the length of the output array is the value of the period'
+        - assert the length of the output array is the value of the period as expected'
     '''    
         simulated_array = BM(period, x).Euler_Maruyama()
         self.assertEqual(len(simulated_array), period)
