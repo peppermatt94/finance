@@ -80,7 +80,7 @@ class CLI_Tests(unittest.TestCase):
     Action :
         - program create an output file in file.csv.
     And :
-        - assert the  program create the file in current folder
+        - assert the  program create the file in current directory
     '''    
         file = 'file.csv'
         subprocess.run(f"finance --output {file}", stdout=subprocess.DEVNULL)
@@ -108,7 +108,7 @@ class CLI_Tests(unittest.TestCase):
         - program create an output file of the ito simulation .
         
     Then :
-        - assert the program create the file correcly in the current folder
+        - assert the program create the file correcly in the current directory
     '''    
         file = 'file.csv'
         subprocess.run(f"finance --company msft --output {file} ito --BM 100", stdout=subprocess.DEVNULL)
@@ -134,7 +134,7 @@ class CLI_Tests(unittest.TestCase):
     Action :
         - program execution.
     Then :
-        - assert the program create the logging file in __main__.py script folder
+        - assert the program create the logging file in __main__.py script directory
     '''    
         subprocess.run("finance", stdout=subprocess.DEVNULL )
         self.assertTrue(os.path.exists("../finance/finance.log"))
