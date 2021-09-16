@@ -11,7 +11,7 @@ import math
 from simulation import BM, GBM, Levy
 
 class simulation_Tests(unittest.TestCase):
-    @unittest.skip("demonstrated")
+    #@unittest.skip("demonstrated")
     @given(x = data_frames(index=indexes(elements=st.datetimes(min_value=pd.Timestamp(2019, 1, 1),
                 max_value=pd.Timestamp(2020, 9, 1)),  min_size=15, unique=True),
                    columns=[column("Close", elements = st.floats( allow_nan = True, allow_infinity=False), dtype=float),
@@ -38,7 +38,7 @@ class simulation_Tests(unittest.TestCase):
                 count+=1                
         self.assertEqual(count, 0)
 ###########################################################################################
-    @unittest.skip("demonstrated")
+    #@unittest.skip("demonstrated")
     @given(x = data_frames(index=indexes(elements=st.datetimes(min_value=pd.Timestamp(2019, 1, 1),
                 max_value=pd.Timestamp(2020, 9, 1)),  min_size=15, unique=True),
                    columns=[column("Close", elements = st.floats( allow_nan = True, allow_infinity=False), dtype=float),
@@ -65,7 +65,7 @@ class simulation_Tests(unittest.TestCase):
                 count+=1                
         self.assertEqual(count, 0)
 #########################################################################################
-    @unittest.skip("demonstrated")
+    #@unittest.skip("demonstrated")
     @given(x = data_frames(index=indexes(elements=st.datetimes(min_value=pd.Timestamp(2019, 1, 1),
                 max_value=pd.Timestamp(2020, 9, 1)),  min_size=15, unique=True),
                    columns=[column("Close", elements = st.floats( allow_nan = True, allow_infinity=False), dtype=float),
@@ -93,7 +93,7 @@ class simulation_Tests(unittest.TestCase):
         self.assertEqual(count, 0)
     
 ########################################################################################
-    @unittest.skip("demonstrated")
+    #@unittest.skip("demonstrated")
     @given(data_frames(index=indexes(elements=st.datetimes(min_value=pd.Timestamp(2019, 1, 1),
                 max_value=pd.Timestamp(2020, 9, 1)),  min_size=100,max_size=100, unique=True),
                    columns=[column("Close", elements = st.floats(min_value=500, max_value=500, allow_nan = False, allow_infinity=False), dtype=float),
@@ -116,7 +116,7 @@ class simulation_Tests(unittest.TestCase):
         self.assertAlmostEqual(mu, 0, delta = 5)
      
 ##################################################################################
-    @unittest.skip("demonstrated")
+    #@unittest.skip("demonstrated")
     @given(data_frames(index=indexes(elements=st.datetimes(min_value=pd.Timestamp(2019, 1, 1),
                 max_value=pd.Timestamp(2020, 9, 1)),  min_size=100,max_size=100, unique=True),
                    columns=[column("Close", elements = st.floats(min_value=500, max_value=500, allow_nan = False, allow_infinity=False), dtype=float),
@@ -138,7 +138,7 @@ class simulation_Tests(unittest.TestCase):
         mu, sigma = GBM(100, x).mu_and_sigma_estimation()
         self.assertAlmostEqual(mu, 0, delta = 5)
 #####################################################################################
-    @unittest.skip("demonstrated")
+    #@unittest.skip("demonstrated")
     @given(data_frames(index=indexes(elements=st.datetimes(min_value=pd.Timestamp(2019, 1, 1),
                 max_value=pd.Timestamp(2020, 9, 1)),  min_size=100,max_size=100, unique=True),
                    columns=[column("Close", elements = st.floats(min_value=500, max_value=500, allow_nan = False, allow_infinity=False), dtype=float),
@@ -236,7 +236,7 @@ class simulation_Tests(unittest.TestCase):
         self.assertEqual(math.floor(math.log((S0**2)*np.exp(2*mu*100)*(np.exp((sigma**2)*100)-1), 10)) , math.floor(math.log(day_100, 10))) 
 
 #############################################################################################
-    @unittest.skip("demonstrated")    
+    #@unittest.skip("demonstrated")    
     @given(x = data_frames(index=indexes(elements=st.datetimes(min_value=pd.Timestamp(2019, 1, 1),
                 max_value=pd.Timestamp(2020, 9, 1)),  min_size=100,max_size=100, unique=True),
                    columns=[column("Close", elements = st.floats(min_value=500, max_value=500, allow_nan = False, allow_infinity=False), dtype=float),
