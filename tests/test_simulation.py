@@ -7,11 +7,11 @@ from hypothesis import assume
 from hypothesis.extra.pandas import column, data_frames,range_indexes, series, indexes,columns
 import subprocess
 import unittest
-
+import math
 from simulation import BM, GBM, Levy
 
 class simulation_Tests(unittest.TestCase):
-    #@unittest.skip("demonstrated")
+    @unittest.skip("demonstrated")
     @given(x = data_frames(index=indexes(elements=st.datetimes(min_value=pd.Timestamp(2019, 1, 1),
                 max_value=pd.Timestamp(2020, 9, 1)),  min_size=15, unique=True),
                    columns=[column("Close", elements = st.floats( allow_nan = True, allow_infinity=False), dtype=float),
@@ -37,8 +37,8 @@ class simulation_Tests(unittest.TestCase):
             if daily == np.nan:
                 count+=1                
         self.assertEqual(count, 0)
-        
-    #@unittest.skip("demonstrated")
+###########################################################################################
+    @unittest.skip("demonstrated")
     @given(x = data_frames(index=indexes(elements=st.datetimes(min_value=pd.Timestamp(2019, 1, 1),
                 max_value=pd.Timestamp(2020, 9, 1)),  min_size=15, unique=True),
                    columns=[column("Close", elements = st.floats( allow_nan = True, allow_infinity=False), dtype=float),
@@ -64,8 +64,8 @@ class simulation_Tests(unittest.TestCase):
             if daily == np.nan:
                 count+=1                
         self.assertEqual(count, 0)
-        
-    #@unittest.skip("demonstrated")
+#########################################################################################
+    @unittest.skip("demonstrated")
     @given(x = data_frames(index=indexes(elements=st.datetimes(min_value=pd.Timestamp(2019, 1, 1),
                 max_value=pd.Timestamp(2020, 9, 1)),  min_size=15, unique=True),
                    columns=[column("Close", elements = st.floats( allow_nan = True, allow_infinity=False), dtype=float),
@@ -92,8 +92,8 @@ class simulation_Tests(unittest.TestCase):
                 count+=1                
         self.assertEqual(count, 0)
     
-    
-    #@unittest.skip("demonstrated")
+########################################################################################
+    @unittest.skip("demonstrated")
     @given(data_frames(index=indexes(elements=st.datetimes(min_value=pd.Timestamp(2019, 1, 1),
                 max_value=pd.Timestamp(2020, 9, 1)),  min_size=100,max_size=100, unique=True),
                    columns=[column("Close", elements = st.floats(min_value=500, max_value=500, allow_nan = False, allow_infinity=False), dtype=float),
@@ -115,7 +115,8 @@ class simulation_Tests(unittest.TestCase):
         mu, sigma = BM(100, x).mu_and_sigma_estimation()
         self.assertAlmostEqual(mu, 0, delta = 5)
      
-    #@unittest.skip("demonstrated")
+##################################################################################
+    @unittest.skip("demonstrated")
     @given(data_frames(index=indexes(elements=st.datetimes(min_value=pd.Timestamp(2019, 1, 1),
                 max_value=pd.Timestamp(2020, 9, 1)),  min_size=100,max_size=100, unique=True),
                    columns=[column("Close", elements = st.floats(min_value=500, max_value=500, allow_nan = False, allow_infinity=False), dtype=float),
@@ -136,8 +137,8 @@ class simulation_Tests(unittest.TestCase):
         x.Close = normal_distribution
         mu, sigma = GBM(100, x).mu_and_sigma_estimation()
         self.assertAlmostEqual(mu, 0, delta = 5)
-        
-    #@unittest.skip("demonstrated")
+#####################################################################################
+    @unittest.skip("demonstrated")
     @given(data_frames(index=indexes(elements=st.datetimes(min_value=pd.Timestamp(2019, 1, 1),
                 max_value=pd.Timestamp(2020, 9, 1)),  min_size=100,max_size=100, unique=True),
                    columns=[column("Close", elements = st.floats(min_value=500, max_value=500, allow_nan = False, allow_infinity=False), dtype=float),
@@ -159,9 +160,11 @@ class simulation_Tests(unittest.TestCase):
         mu, sigma = Levy(100, x).mu_and_sigma_estimation()
         self.assertAlmostEqual(mu, 0, delta = 5)
     
+#####################################################################################
+    #@unittest.skip("demonstrated")
     @given(data_frames(index=indexes(elements=st.datetimes(min_value=pd.Timestamp(2019, 1, 1),
                 max_value=pd.Timestamp(2020, 9, 1)),  min_size=100,max_size=100, unique=True),
-                    columns=[column("Close", elements = st.floats(min_value=500, max_value=500, allow_nan = False, allow_infinity=False), dtype=float),
+                    columns=[column("Close", elements = st.floats(min_value=400, max_value=600, allow_nan = False, allow_infinity=False), dtype=float),
                             column("longName", elements = st.text(alphabet = 'p',min_size = 2, max_size = 2))]))
     @settings(max_examples=1, deadline=None)
     def test_Brownian_motion_statistically_correct(self, x):
@@ -169,75 +172,71 @@ class simulation_Tests(unittest.TestCase):
     Given:
         - dataframe with datetime index with length 100.
     so:
-        - sorting the index of dataframe
-        - fullfilling the 'Close' column with random normal data with casual seed
-        - construct a list of std of the BM simulation with differents length with a loop
-           for three different periods of simulation
-        - take  the mean of the list associated to  each period of simulation
+        - sorting the index of dataframe ( i need sorted datetime)
+        - take the  std of 1000 sampling of BM process with different time occurency: 10,100,1000 days
     And :
-        - assert the geometric brownian motion increase the std increasing the time step with sqrt(t)'
+        - assert the 100 day BM std is almost 10 day BM std * sqrt(10)
+        - assert the 1000 day BM std is almost 100 day BM std * sqrt(10)
+        - assert the 1000 day BM std is almost 10 day BM std * 10
+    
     Reference: https://en.wikipedia.org/wiki/Brownian_motion
     '''    
-        normal_distribution =  rn.normal(50,0.1,100)  # i train the simulation with a random numbers created with random seed
         x = x.sort_index()
-        x.Close = normal_distribution
-        day_10 = []
-        day_100 = []
-        day_1000 = []
-        for i in range(1000):
-            day_10.append(np.std( BM(10, x).Euler_Maruyama().Close))
-            day_100.append(np.std( BM(100, x).Euler_Maruyama().Close))
-            day_1000.append(np.std( BM(1000, x).Euler_Maruyama().Close))
+        day_10 = np.std([ BM(10, x).Euler_Maruyama().Close[-1] for _ in range(1000)])
+        day_100 = np.std([ BM(100, x).Euler_Maruyama().Close[-1] for _ in range(1000)])
+        day_1000 = np.std([ BM(1000, x).Euler_Maruyama().Close[-1] for _ in range(1000)])
         
-        day_10std = np.mean(day_10)
-        day_100std = np.mean(day_100)
-        day_1000std = np.mean(day_1000)
-        
-         # i put a delta since they are statistical quantity, delta = 1 is small
-        self.assertAlmostEqual(day_100std, day_10std*np.sqrt(10), delta = 1)
-        self.assertAlmostEqual(day_1000std, day_100std*np.sqrt(10), delta = 1)
-        
+         # i put a delta since they are statistical quantity, delta = 10% of the target value
+        self.assertAlmostEqual(day_100, day_10*np.sqrt(10), delta = day_100*0.1)
+        self.assertAlmostEqual(day_1000, day_100*np.sqrt(10), delta = day_1000*0.1)
+        self.assertAlmostEqual(day_1000, day_100*np.sqrt(10), delta = day_1000*0.5)
      
+###################################################################################
     @given(data_frames(index=indexes(elements=st.datetimes(min_value=pd.Timestamp(2019, 1, 1),
                 max_value=pd.Timestamp(2020, 9, 1)),  min_size=100,max_size=100, unique=True),
-                   columns=[column("Close", elements = st.floats(min_value=500, max_value=500, allow_nan = False, allow_infinity=False), dtype=float),
+                   columns=[column("Close", elements = st.floats(min_value=400, max_value=600, allow_nan = False, allow_infinity=False), dtype=float),
                             column("longName", elements = st.text(alphabet = 'p',min_size = 2, max_size = 2))]))
     @settings(max_examples=1, deadline=None)
     def test_Geometric_Brownian_motion_statistically_correct(self, x):
         '''
     Given:
-        - dataframe with datetime index with length 100 and a columns named "Close" and "longName"
+        - dataframe with datetime index with length 100 and a columns named "Close" 
+          (with values generated random from random seed) and "longName"
     so:
-        - sorting the index of dataframe
-        - fullfilling the 'Close' column with random normal data with casual seed
-        - construct a list of std of the GBM simulation with differents length with a loop
-           for three different periods of simulation
-        - take the mean of the list associated to each period of simulation
+        - sorting the index of dataframe ( i want the generated data be sorted)
+        - take the variance of GBM variables after 10, 50, 100 days
+        - take S0 that is the last number of the experimental data (random generated)
+        - take mu and sigma from the experimental data (random generated)
     And :
-        - assert the brownian motion increase the std with increasing the time step by a factor sqrt(t)'
+        Since the variables distributed according to brownian motion have 
+          a variance that depend on t: 
+          var(X_t) = (S0**2)*np.exp(2*mu*t)*(np.exp((sigma**2)*t)-1)
+          
+         - assert: the variable after 10 day have a variance equal 
+           to the expected one in the order of magnitude
+           
+         - assert: the variable after 50 day have a variance equal 
+           to the expected one in the order of magnitude'
+           
+         - assert: the variable after 100 day have a variance equal 
+           to the expected one in the order of magnitude
+
     Reference: https://en.wikipedia.org/wiki/Geometric_Brownian_motion
     '''    
-        normal_distribution = rn.normal(50,0.1,100) # i train the simulation with a random numbers created with random seed
         x = x.sort_index()
-        x.Close = normal_distribution
-        day_10 = []
-        day_100 = []
-        day_1000 = []
-        for i in range(1000): # i want to create statistacal limit for variance
-            day_10.append(np.var( GBM(10, x).Euler_Maruyama().Close))
-            day_100.append(np.var( GBM(100, x).Euler_Maruyama().Close))
-            day_1000.append(np.var( GBM(1000, x).Euler_Maruyama().Close))
-
-        day_10std = np.mean(day_10)
-        day_100std = np.mean(day_100)
-        day_1000std = np.mean(day_1000)
+        day_10 = np.var([GBM(10, x).Euler_Maruyama().Close[-1] for _ in range(1000)])
+        day_50 = np.var([GBM(50, x).Euler_Maruyama().Close[-1] for _ in range(1000)])
+        day_100 = np.var([GBM(100, x).Euler_Maruyama().Close[-1] for _ in range(1000)])
+        S0 =x.Close[-1] 
+        mu,sigma = GBM(30,x).mu_and_sigma_estimation()
         
-        # i put a delta since they are statistical quantity, small delta chosen
-        self.assertAlmostEqual(day_100std, day_10std*10, delta = 0.1) 
-        self.assertAlmostEqual(day_1000std, day_100std*10, delta = 1)    
-    
-    
-    #@unittest.skip("demonstrated")    
+        # i compare the order of magnitude since the value of the var are very high and request a perfect equality would be unreasonable
+        self.assertEqual(math.floor(math.log((S0**2)*np.exp(2*mu*10)*(np.exp((sigma**2)*10)-1), 10)) , math.floor(math.log(day_10, 10))) 
+        self.assertEqual(math.floor(math.log((S0**2)*np.exp(2*mu*50)*(np.exp((sigma**2)*50)-1), 10)) , math.floor(math.log(day_50, 10))) 
+        self.assertEqual(math.floor(math.log((S0**2)*np.exp(2*mu*100)*(np.exp((sigma**2)*100)-1), 10)) , math.floor(math.log(day_100, 10))) 
+
+#############################################################################################
+    @unittest.skip("demonstrated")    
     @given(x = data_frames(index=indexes(elements=st.datetimes(min_value=pd.Timestamp(2019, 1, 1),
                 max_value=pd.Timestamp(2020, 9, 1)),  min_size=100,max_size=100, unique=True),
                    columns=[column("Close", elements = st.floats(min_value=500, max_value=500, allow_nan = False, allow_infinity=False), dtype=float),
