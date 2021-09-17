@@ -11,7 +11,7 @@ import math
 from simulation import BM, GBM, Levy
 
 class simulation_Tests(unittest.TestCase):
-    #@unittest.skip("demonstrated")
+    @unittest.skip("demonstrated")
     @given(x = data_frames(index=indexes(elements=st.datetimes(min_value=pd.Timestamp(2019, 1, 1),
                 max_value=pd.Timestamp(2020, 9, 1)),  min_size=15, unique=True),
                    columns=[column("Close", elements = st.floats( allow_nan = True, allow_infinity=False), dtype=float),
@@ -20,7 +20,7 @@ class simulation_Tests(unittest.TestCase):
     def test_drop_nan_BM(self,x):
         '''
     Given:
-        - Dataframe with datetime index and columns named "Close" and "longName".
+        - Dataframe with datetime index and columns named "Close" (with nan values) and "longName".
     So:
         - sorting the dataframe respect to date
         - imposing upper and lower limit to avoid random generation of too big or too small values 
@@ -37,8 +37,8 @@ class simulation_Tests(unittest.TestCase):
             if daily == np.nan:
                 count+=1                
         self.assertEqual(count, 0)
-###########################################################################################
-    #@unittest.skip("demonstrated")
+##################################################################################################################################
+    @unittest.skip("demonstrated")
     @given(x = data_frames(index=indexes(elements=st.datetimes(min_value=pd.Timestamp(2019, 1, 1),
                 max_value=pd.Timestamp(2020, 9, 1)),  min_size=15, unique=True),
                    columns=[column("Close", elements = st.floats( allow_nan = True, allow_infinity=False), dtype=float),
@@ -47,7 +47,7 @@ class simulation_Tests(unittest.TestCase):
     def test_drop_nan_GBM(self,x):
         '''
     Given:
-        - Dataframe with datetime index and columns named "Close" and "longName".
+        - Dataframe with datetime index and columns named "Close" (with nan values) and "longName".
     So:
         - sorting the dataframe respect to date
         - imposing upper and lower limit to avoid random generation of too big or too small values 
@@ -64,8 +64,8 @@ class simulation_Tests(unittest.TestCase):
             if daily == np.nan:
                 count+=1                
         self.assertEqual(count, 0)
-#########################################################################################
-    #@unittest.skip("demonstrated")
+#############################################################à####################################################################################
+    @unittest.skip("demonstrated")
     @given(x = data_frames(index=indexes(elements=st.datetimes(min_value=pd.Timestamp(2019, 1, 1),
                 max_value=pd.Timestamp(2020, 9, 1)),  min_size=15, unique=True),
                    columns=[column("Close", elements = st.floats( allow_nan = True, allow_infinity=False), dtype=float),
@@ -74,7 +74,7 @@ class simulation_Tests(unittest.TestCase):
     def test_drop_nan_levy(self,x):
         '''
     Given:
-        - Dataframe with datetime index and columns named "Close" and "longName".
+        - Dataframe with datetime index and columns named "Close" (with nan values) and "longName".
     So:
         - sorting the dataframe respect to date
         - imposing upper and lower limit to avoid random generation of too big or too small values 
@@ -91,9 +91,9 @@ class simulation_Tests(unittest.TestCase):
             if daily == np.nan:
                 count+=1                
         self.assertEqual(count, 0)
-    
-########################################################################################
-    #@unittest.skip("demonstrated")
+
+###################################################################################################################################################
+    @unittest.skip("demonstrated")
     @given(data_frames(index=indexes(elements=st.datetimes(min_value=pd.Timestamp(2019, 1, 1),
                 max_value=pd.Timestamp(2020, 9, 1)),  min_size=100,max_size=100, unique=True),
                    columns=[column("Close", elements = st.floats(min_value=500, max_value=500, allow_nan = False, allow_infinity=False), dtype=float),
@@ -114,9 +114,9 @@ class simulation_Tests(unittest.TestCase):
         x.Close = normal_distribution
         mu, sigma = BM(100, x).mu_and_sigma_estimation()
         self.assertAlmostEqual(mu, 0, delta = 5)
-     
-##################################################################################
-    #@unittest.skip("demonstrated")
+
+############################################################################################################################
+    @unittest.skip("demonstrated")
     @given(data_frames(index=indexes(elements=st.datetimes(min_value=pd.Timestamp(2019, 1, 1),
                 max_value=pd.Timestamp(2020, 9, 1)),  min_size=100,max_size=100, unique=True),
                    columns=[column("Close", elements = st.floats(min_value=500, max_value=500, allow_nan = False, allow_infinity=False), dtype=float),
@@ -137,8 +137,9 @@ class simulation_Tests(unittest.TestCase):
         x.Close = normal_distribution
         mu, sigma = GBM(100, x).mu_and_sigma_estimation()
         self.assertAlmostEqual(mu, 0, delta = 5)
-#####################################################################################
-    #@unittest.skip("demonstrated")
+
+################################################################################################################################
+    @unittest.skip("demonstrated")
     @given(data_frames(index=indexes(elements=st.datetimes(min_value=pd.Timestamp(2019, 1, 1),
                 max_value=pd.Timestamp(2020, 9, 1)),  min_size=100,max_size=100, unique=True),
                    columns=[column("Close", elements = st.floats(min_value=500, max_value=500, allow_nan = False, allow_infinity=False), dtype=float),
@@ -159,9 +160,9 @@ class simulation_Tests(unittest.TestCase):
         x.Close = normal_distribution
         mu, sigma = Levy(100, x).mu_and_sigma_estimation()
         self.assertAlmostEqual(mu, 0, delta = 5)
-    
-#####################################################################################
-    #@unittest.skip("demonstrated")
+
+#######################################################################################################################################
+    @unittest.skip("demonstrated")
     @given(data_frames(index=indexes(elements=st.datetimes(min_value=pd.Timestamp(2019, 1, 1),
                 max_value=pd.Timestamp(2020, 9, 1)),  min_size=100,max_size=100, unique=True),
                     columns=[column("Close", elements = st.floats(min_value=400, max_value=600, allow_nan = False, allow_infinity=False), dtype=float),
@@ -190,8 +191,9 @@ class simulation_Tests(unittest.TestCase):
         self.assertAlmostEqual(day_100, day_10*np.sqrt(10), delta = day_100*0.1)
         self.assertAlmostEqual(day_1000, day_100*np.sqrt(10), delta = day_1000*0.1)
         self.assertAlmostEqual(day_1000, day_100*np.sqrt(10), delta = day_1000*0.5)
-     
-###################################################################################
+
+##########################################################################################################################################
+    @unittest.skip("demonstrated")
     @given(data_frames(index=indexes(elements=st.datetimes(min_value=pd.Timestamp(2019, 1, 1),
                 max_value=pd.Timestamp(2020, 9, 1)),  min_size=100,max_size=100, unique=True),
                    columns=[column("Close", elements = st.floats(min_value=400, max_value=600, allow_nan = False, allow_infinity=False), dtype=float),
@@ -235,14 +237,64 @@ class simulation_Tests(unittest.TestCase):
         self.assertEqual(math.floor(math.log((S0**2)*np.exp(2*mu*50)*(np.exp((sigma**2)*50)-1), 10)) , math.floor(math.log(day_50, 10))) 
         self.assertEqual(math.floor(math.log((S0**2)*np.exp(2*mu*100)*(np.exp((sigma**2)*100)-1), 10)) , math.floor(math.log(day_100, 10))) 
 
-#############################################################################################
-    #@unittest.skip("demonstrated")    
+##########################################################################################################################
+    #@unittest.skip("demonstrated")
+    @given(data_frames(index=indexes(elements=st.datetimes(min_value=pd.Timestamp(2019, 1, 1),
+                max_value=pd.Timestamp(2020, 9, 1)),  min_size=100,max_size=100, unique=True),
+                   columns=[column("Close", elements = st.floats(min_value=400, max_value=600, allow_nan = False, allow_infinity=False), dtype=float),
+                            column("longName", elements = st.text(alphabet = 'p',min_size = 2, max_size = 2))]))
+    @settings(max_examples=10, deadline=None)
+    def test_levy_process_has_poisson_process_correctly(self,x):
+        '''
+    Given:
+        - dataframe with datetime index with length 100 and a columns named "Close" 
+          (with values generated random from random seed) and "longName"
+    so:
+        - sorting the index of dataframe ( i want the generated data be sorted)
+        - creating a levy process object 
+        - put in _drift and _vol the value 0 in a way that only poissonian process remains
+        - reconstruct the poissonian process from the data finding jump greater or equal to levy_process_to_test.jump_size
+    And :
+        Since the variables distributed according to poissonian distribution
+        have variance equal to mean equal to lambda: 
+          
+         - assert: mean and variance of the distribution are almost equal with 10 per cent of error
+         - assert: mean of distribution is almost equal to the jump parameter of the poissonian process (lamba)
+         
+    About the complexity to test levy process and some advice:
+    Reference: https://www.sciencedirect.com/science/article/pii/S030441491300080X
+        '''    
+        x = x.sort_index()
+        days = 10000 # i need a lot of day to achieve thermodynamical limit
+        levy_process_to_test = Levy(days, x)
+        levy_process_to_test._drift = 0
+        levy_process_to_test._vol = 0
+        close_sequence = levy_process_to_test.Euler_Maruyama().Close
+        
+        # To obtain the poissonian process from the data
+        n=1
+        Poissonian_sequence = []
+        while n < days:
+            if close_sequence[n] -close_sequence[n-1] >= levy_process_to_test.jump_size:
+                jump_made = int((close_sequence[n] -close_sequence[n-1])/levy_process_to_test.jump_size)
+                Poissonian_sequence.append(jump_made)
+            else:
+                Poissonian_sequence.append(0)
+            n=n+1
+
+        mean = float(np.mean(Poissonian_sequence))
+        var = float(np.var(Poissonian_sequence))
+        self.assertAlmostEqual(mean, var, delta = mean*0.1)
+        self.assertAlmostEqual(mean, levy_process_to_test.jump, delta = mean*0.1)
+
+#################################################################################################################################
+    @unittest.skip("demonstrated")
     @given(x = data_frames(index=indexes(elements=st.datetimes(min_value=pd.Timestamp(2019, 1, 1),
                 max_value=pd.Timestamp(2020, 9, 1)),  min_size=100,max_size=100, unique=True),
                    columns=[column("Close", elements = st.floats(min_value=500, max_value=500, allow_nan = False, allow_infinity=False), dtype=float),
                             column("longName", elements = st.text(alphabet = 'p',min_size = 2, max_size = 2))]), 
            period = st.integers(min_value=10, max_value= 500))
-    @settings(deadline=None)    
+    @settings(deadline=None)
     def test_euler_maruyama_yelds_correct_period(self, x, period):
         '''
     Given:
@@ -252,9 +304,9 @@ class simulation_Tests(unittest.TestCase):
         - create a BM simulation in simulated_array
     And :
         - assert the length of the output array is the value of the period as expected'
-    '''    
+    '''
         simulated_array = BM(period, x).Euler_Maruyama()
         self.assertEqual(len(simulated_array), period)
-    
+
 if __name__ == '__main__':
     unittest.main() 
