@@ -125,7 +125,6 @@ class ITO_simulation:
         T = self.T()
         x = np.empty(self.number_of_days)
         x[0] = x0
-        self._drift, self._vol = self.mu_and_sigma_estimation()
         for i in range(self.number_of_days-1):
             dt = (T[i+1]-T[i]).days
             t = (T[i+1]-T[0]).days
@@ -150,9 +149,12 @@ class BM(ITO_simulation):
     """
     number_of_days: int
     data_of_period: pd.DataFrame()
-    _drift: float = 0.0
-    _vol: float = 1.0
+    _drift: float = 0 #Default value changed in __post_init__
+    _vol: float = 0
 
+    def __post_init__(self):
+        self._drift = self.mu_and_sigma_estimation()[0]
+        self._vol= self.mu_and_sigma_estimation()[1]
 
     def drift(self, t, x) -> float:
         return self._drift
@@ -169,7 +171,12 @@ class GBM(ITO_simulation):
     number_of_days: int
     data_of_period: pd.DataFrame()
     _drift: float = 0
-    _vol: float = 1
+    _vol: float = 0
+
+    def __post_init__(self):
+        self._drift = self.mu_and_sigma_estimation()[0]
+        self._vol= self.mu_and_sigma_estimation()[1]
+
 
     def drift(self, t, x) -> float:
         return self._drift * x
@@ -186,11 +193,14 @@ class Levy(ITO_simulation):
     """
     number_of_days: int
     data_of_period: pd.DataFrame()
-    _drift: float = 0.0
-    _vol: float = 1.0
+    _drift: float = 1
+    _vol: float = 0
     jump: float = 0.01      # the default values are there to give an idea
     jump_size: float = 0.1  # of the order of magnitude of the values
 
+    def __post_init__(self):
+        self._drift = self.mu_and_sigma_estimation()[0]
+        self._vol= self.mu_and_sigma_estimation()[1]
 
     # Here i assume the jump intensity doesn't depend on time
     # and space. Future development could evaluate a property.setter
