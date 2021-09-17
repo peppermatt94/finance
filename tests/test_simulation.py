@@ -11,7 +11,7 @@ import math
 from simulation import BM, GBM, Levy
 
 class simulation_Tests(unittest.TestCase):
-    @unittest.skip("demonstrated")
+    #@unittest.skip("demonstrated")
     @given(x = data_frames(index=indexes(elements=st.datetimes(min_value=pd.Timestamp(2019, 1, 1),
                 max_value=pd.Timestamp(2020, 9, 1)),  min_size=15, unique=True),
                    columns=[column("Close", elements = st.floats( allow_nan = True, allow_infinity=False), dtype=float),
@@ -38,7 +38,7 @@ class simulation_Tests(unittest.TestCase):
                 count+=1                
         self.assertEqual(count, 0)
 ##################################################################################################################################
-    @unittest.skip("demonstrated")
+    #@unittest.skip("demonstrated")
     @given(x = data_frames(index=indexes(elements=st.datetimes(min_value=pd.Timestamp(2019, 1, 1),
                 max_value=pd.Timestamp(2020, 9, 1)),  min_size=15, unique=True),
                    columns=[column("Close", elements = st.floats( allow_nan = True, allow_infinity=False), dtype=float),
@@ -65,7 +65,7 @@ class simulation_Tests(unittest.TestCase):
                 count+=1                
         self.assertEqual(count, 0)
 #############################################################à####################################################################################
-    @unittest.skip("demonstrated")
+    #@unittest.skip("demonstrated")
     @given(x = data_frames(index=indexes(elements=st.datetimes(min_value=pd.Timestamp(2019, 1, 1),
                 max_value=pd.Timestamp(2020, 9, 1)),  min_size=15, unique=True),
                    columns=[column("Close", elements = st.floats( allow_nan = True, allow_infinity=False), dtype=float),
@@ -93,7 +93,7 @@ class simulation_Tests(unittest.TestCase):
         self.assertEqual(count, 0)
 
 ###################################################################################################################################################
-    @unittest.skip("demonstrated")
+    #@unittest.skip("demonstrated")
     @given(data_frames(index=indexes(elements=st.datetimes(min_value=pd.Timestamp(2019, 1, 1),
                 max_value=pd.Timestamp(2020, 9, 1)),  min_size=100,max_size=100, unique=True),
                    columns=[column("Close", elements = st.floats(min_value=500, max_value=500, allow_nan = False, allow_infinity=False), dtype=float),
@@ -116,7 +116,7 @@ class simulation_Tests(unittest.TestCase):
         self.assertAlmostEqual(mu, 0, delta = 5)
 
 ############################################################################################################################
-    @unittest.skip("demonstrated")
+    #@unittest.skip("demonstrated")
     @given(data_frames(index=indexes(elements=st.datetimes(min_value=pd.Timestamp(2019, 1, 1),
                 max_value=pd.Timestamp(2020, 9, 1)),  min_size=100,max_size=100, unique=True),
                    columns=[column("Close", elements = st.floats(min_value=500, max_value=500, allow_nan = False, allow_infinity=False), dtype=float),
@@ -139,7 +139,7 @@ class simulation_Tests(unittest.TestCase):
         self.assertAlmostEqual(mu, 0, delta = 5)
 
 ################################################################################################################################
-    @unittest.skip("demonstrated")
+    #@unittest.skip("demonstrated")
     @given(data_frames(index=indexes(elements=st.datetimes(min_value=pd.Timestamp(2019, 1, 1),
                 max_value=pd.Timestamp(2020, 9, 1)),  min_size=100,max_size=100, unique=True),
                    columns=[column("Close", elements = st.floats(min_value=500, max_value=500, allow_nan = False, allow_infinity=False), dtype=float),
@@ -162,7 +162,7 @@ class simulation_Tests(unittest.TestCase):
         self.assertAlmostEqual(mu, 0, delta = 5)
 
 #######################################################################################################################################
-    @unittest.skip("demonstrated")
+    #@unittest.skip("demonstrated")
     @given(data_frames(index=indexes(elements=st.datetimes(min_value=pd.Timestamp(2019, 1, 1),
                 max_value=pd.Timestamp(2020, 9, 1)),  min_size=100,max_size=100, unique=True),
                     columns=[column("Close", elements = st.floats(min_value=400, max_value=600, allow_nan = False, allow_infinity=False), dtype=float),
@@ -193,7 +193,7 @@ class simulation_Tests(unittest.TestCase):
         self.assertAlmostEqual(day_1000, day_100*np.sqrt(10), delta = day_1000*0.5)
 
 ##########################################################################################################################################
-    @unittest.skip("demonstrated")
+    #@unittest.skip("demonstrated")
     @given(data_frames(index=indexes(elements=st.datetimes(min_value=pd.Timestamp(2019, 1, 1),
                 max_value=pd.Timestamp(2020, 9, 1)),  min_size=100,max_size=100, unique=True),
                    columns=[column("Close", elements = st.floats(min_value=400, max_value=600, allow_nan = False, allow_infinity=False), dtype=float),
@@ -288,7 +288,7 @@ class simulation_Tests(unittest.TestCase):
         self.assertAlmostEqual(mean, levy_process_to_test.jump, delta = mean*0.1)
 
 #################################################################################################################################
-    @unittest.skip("demonstrated")
+    #@unittest.skip("demonstrated")
     @given(x = data_frames(index=indexes(elements=st.datetimes(min_value=pd.Timestamp(2019, 1, 1),
                 max_value=pd.Timestamp(2020, 9, 1)),  min_size=100,max_size=100, unique=True),
                    columns=[column("Close", elements = st.floats(min_value=500, max_value=500, allow_nan = False, allow_infinity=False), dtype=float),
