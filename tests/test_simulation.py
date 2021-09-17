@@ -231,7 +231,7 @@ class simulation_Tests(unittest.TestCase):
         day_100 = np.var([GBM(100, x).Euler_Maruyama().Close[-1] for _ in range(1000)])
         S0 =x.Close[-1] 
         mu,sigma = GBM(30,x).mu_and_sigma_estimation()
-        
+
         # i compare the order of magnitude since the value of the var are very high and request a perfect equality would be unreasonable
         self.assertEqual(math.floor(math.log((S0**2)*np.exp(2*mu*10)*(np.exp((sigma**2)*10)-1), 10)) , math.floor(math.log(day_10, 10))) 
         self.assertEqual(math.floor(math.log((S0**2)*np.exp(2*mu*50)*(np.exp((sigma**2)*50)-1), 10)) , math.floor(math.log(day_50, 10))) 
@@ -253,13 +253,19 @@ class simulation_Tests(unittest.TestCase):
         - sorting the index of dataframe ( i want the generated data be sorted)
         - creating a levy process object 
         - put in _drift and _vol the value 0 in a way that only poissonian process remains
-        - reconstruct the poissonian process from the data finding jump greater or equal to levy_process_to_test.jump_size
+        - reconstruct the poissonian process from the data, finding jump in data greater or equal to levy_process_to_test.jump_size
+        - we record the value of the jump in a list that reconstruct the poisson process
+
+        (to understand the difference between jump and jump_size, think the jump as the actual step you see,
+           jump_size as the factor that must muliply the poissonian random variable to get jump; 
+           the effective random variable is jump/jump_size)
+
     And :
         Since the variables distributed according to poissonian distribution
         have variance equal to mean equal to lambda: 
           
          - assert: mean and variance of the distribution are almost equal with 10 per cent of error
-         - assert: mean of distribution is almost equal to the jump parameter of the poissonian process (lamba)
+         - assert: mean of distribution is almost equal to the jump parameter of the poissonian process (lambda)
          
     About the complexity to test levy process and some advice:
     Reference: https://www.sciencedirect.com/science/article/pii/S030441491300080X
@@ -270,14 +276,14 @@ class simulation_Tests(unittest.TestCase):
         levy_process_to_test._drift = 0
         levy_process_to_test._vol = 0
         close_sequence = levy_process_to_test.Euler_Maruyama().Close
-        
+
         # To obtain the poissonian process from the data
         n=1
         Poissonian_sequence = []
-        while n < days:
+        while n <= days:
             if close_sequence[n] -close_sequence[n-1] >= levy_process_to_test.jump_size:
-                jump_made = int((close_sequence[n] -close_sequence[n-1])/levy_process_to_test.jump_size)
-                Poissonian_sequence.append(jump_made)
+                poissonian_variable = int((close_sequence[n] -close_sequence[n-1])/levy_process_to_test.jump_size)
+                Poissonian_sequence.append(poissonian_variable)
             else:
                 Poissonian_sequence.append(0)
             n=n+1
